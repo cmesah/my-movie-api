@@ -62,3 +62,5 @@ def create_movie(id:int = Body(), title:str = Body(),overview:str = Body(),year:
 
 @app.put('/movies', tags=['movies'])
 def update_movie():
+    pass
+
