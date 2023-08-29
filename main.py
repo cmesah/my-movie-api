@@ -1,9 +1,20 @@
 from fastapi import FastAPI,Body
 from fastapi.responses import HTMLResponse
+from pydantic import BaseModel
+from typing import Optional
 
 app = FastAPI()
 app.title = "Mi aplicacion con FastApi"
 app.version = "0.0.1"
+
+class Movie(BaseModel):
+    id : Optional[int] = None
+    title : str
+    overview : str
+    year : str
+    rating: float
+    category:str 
+    
 
 movies =[
     {
@@ -35,6 +46,7 @@ def get_movies():
 
 @app.get('/movies/{id}',tags=['movies'])
 def get_movie(id: int):
+ 
     for item in movies:
         if item["id"] == id:
             return item
@@ -48,28 +60,27 @@ def get_movies_by_category(category:str, year: int):
     return []
 
 @app.post('/movies', tags=['movies'])
-def create_movie(id:int = Body(), title:str = Body(),overview:str = Body(),year:int = Body(), rating:float = Body(),category:str = Body()):
-    movies.append({
-        "id": id,
-        "title":title,
-        "overview":overview,
-        "year":year,
-        "rating":rating,
-        "category":category
-    })
+def create_movie(movie:Movie):
+    movies.append(movie)
     return movies
     
 
 @app.put('/movies/{id}', tags=['movies'])
-def update_movie(id:int, title:str = Body(),overview:str = Body(),year:int = Body(), rating:float = Body(),category:str = Body()):
+def update_movie(id:int, movie:Movie):
     for item in movies:
         if item["id"] == id:
-            item['title'] = title,
-            item['overview'] = overview,
-            item['year'] = year,
-            item['rating'] = rating,
-            item['category'] = category
+            item['title'] = movie.title
+            item['overview'] = movie.overview
+            item['year'] = movie.year
+            item['rating'] = movie.rating
+            item['category'] = movie.category
             
             return movies 
         
-
+@app.delete('/movies/{id}', tags=['movies'])
+def delete_movie(id:int):
+    for num in movies:
+        if num['id'] == id:
+            movies.remove(num)
+            
+            return movies
